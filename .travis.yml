@@ -1,0 +1,26 @@
+language: go
+
+sudo: false
+
+go:
+  - 1.4
+  - tip
+
+env:
+  - GOARCH=amd64
+
+install:
+  - export PATH="$HOME/gopath/bin:$PATH"
+  - go get github.com/tools/godep
+  - go get -t -d ./...
+  - godep restore ./...
+
+script:
+  - cd $HOME/gopath/src/github.com/albertoleal/features
+  - go test -x ./...
+
+notifications:
+  email:
+    recipients:
+      - albertonb@gmail.com
+
