@@ -58,7 +58,7 @@ func (f *Features) UserHasAccess(featureKey string, userId string) bool {
 		return false
 	}
 
-	if feature.Enabled == true {
+	if f.IsActive(featureKey) {
 		return true
 	}
 
