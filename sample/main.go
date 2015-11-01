@@ -13,9 +13,10 @@ func main() {
 
 	feature := engine.FeatureFlag{
 		Key:     "Feature X",
-		Enabled: true,
+		Enabled: false,
+		Users:   []*engine.User{&engine.User{Id: "alice@example.org"}},
 	}
-	Features.AddFeature(feature)
+	Features.Save(feature)
 
 	fmt.Printf("Is `Feature X` enabled? %t \n", Features.IsActive("Feature X"))
 	fmt.Printf("Is `Feature X` disabled? %t \n", Features.IsInactive("Feature X"))
@@ -27,5 +28,7 @@ func main() {
 	Features.Without("Feature X", func() {
 		fmt.Println("`Feature X` is disabled!")
 	})
+
+	fmt.Printf("Does `alice@example.org` have access to `Feature X`? %t \n", Features.UserHasAccess("Feature X", "alice@example.org"))
 
 }

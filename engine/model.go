@@ -4,12 +4,26 @@ import (
 	"errors"
 )
 
-type FeatureFlag struct {
-	Enabled bool   `json:"enabled"`
-	Key     string `json:"key"`
+type User struct {
+	Id string
 }
 
-func NewFeatureFlag(key string, enabled bool) (*FeatureFlag, error) {
+type FeatureFlag struct {
+	Enabled bool    `json:"enabled"`
+	Key     string  `json:"key"`
+	Users   []*User `json:"users"`
+}
+
+func (ff *FeatureFlag) ContainsUser(user *User) bool {
+	for _, u := range ff.Users {
+		if u.Id == user.Id {
+			return true
+		}
+	}
+	return false
+}
+
+func NewFeatureFlag(key string, enabled bool, users []*User) (*FeatureFlag, error) {
 	if key == "" {
 		return nil, errors.New("Key cannot be empty.")
 	}
@@ -17,6 +31,7 @@ func NewFeatureFlag(key string, enabled bool) (*FeatureFlag, error) {
 	return &FeatureFlag{
 		Key:     key,
 		Enabled: enabled,
+		Users:   users,
 	}, nil
 }
 

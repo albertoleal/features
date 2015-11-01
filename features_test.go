@@ -22,13 +22,13 @@ func (s *S) SetUpTest(c *C) {
 	s.Features = features.New(memory.New())
 }
 
-func (s *S) TestAddFeature(c *C) {
+func (s *S) TestSave(c *C) {
 	key := "Feature Key"
 	feature := engine.FeatureFlag{
 		Key:     key,
 		Enabled: true,
 	}
-	s.Features.AddFeature(feature)
+	s.Features.Save(feature)
 	c.Assert(s.Features.IsActive(key), Equals, true)
 }
 
@@ -42,7 +42,7 @@ func (s *S) TestIsActive(c *C) {
 		Key:     key,
 		Enabled: true,
 	}
-	s.Features.AddFeature(feature)
+	s.Features.Save(feature)
 	c.Assert(s.Features.IsActive(key), Equals, true)
 
 	// Disabled
@@ -50,7 +50,7 @@ func (s *S) TestIsActive(c *C) {
 		Key:     key,
 		Enabled: false,
 	}
-	s.Features.AddFeature(feature)
+	s.Features.Save(feature)
 	c.Assert(s.Features.IsActive(key), Equals, false)
 }
 
@@ -64,7 +64,7 @@ func (s *S) TestIsInactive(c *C) {
 		Key:     key,
 		Enabled: false,
 	}
-	s.Features.AddFeature(feature)
+	s.Features.Save(feature)
 	c.Assert(s.Features.IsInactive(key), Equals, true)
 
 	// Enabled
@@ -72,7 +72,7 @@ func (s *S) TestIsInactive(c *C) {
 		Key:     key,
 		Enabled: true,
 	}
-	s.Features.AddFeature(feature)
+	s.Features.Save(feature)
 	c.Assert(s.Features.IsInactive(key), Equals, false)
 }
 
@@ -89,7 +89,7 @@ func (s *S) TestWith(c *C) {
 		Key:     key,
 		Enabled: true,
 	}
-	s.Features.AddFeature(feature)
+	s.Features.Save(feature)
 
 	s.Features.With(key, func() {
 		status = false
@@ -103,4 +103,26 @@ func (s *S) TestWithout(c *C) {
 		status = true
 	})
 	c.Assert(status, Equals, true)
+}
+
+func (s *S) TestUserHasAccessWhenTheFeatureIsInactive(c *C) {
+	key := "Feature Key"
+	email := "alice@example.org"
+
+	feature, err := engine.NewFeatureFlag(key, false, []*engine.User{&engine.User{Id: email}})
+	err = s.Features.Save(*feature)
+	c.Check(err, IsNil)
+
+	c.Assert(s.Features.UserHasAccess(key, email), Equals, true)
+}
+
+func (s *S) TestUserHasAccessWhenTheFeatureIsActive(c *C) {
+	key := "Feature Key"
+	email := "alice@example.org"
+
+	feature, err := engine.NewFeatureFlag(key, true, []*engine.User{&engine.User{Id: email}})
+	err = s.Features.Save(*feature)
+	c.Check(err, IsNil)
+
+	c.Assert(s.Features.UserHasAccess(key, email), Equals, true)
 }
