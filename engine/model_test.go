@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"hash/crc32"
 	"testing"
 
 	. "gopkg.in/check.v1"
@@ -44,10 +45,14 @@ func (s *S) TestContainsUserNotFound(c *C) {
 func (s *S) TestUserInPercentage(c *C) {
 	ff, err := NewFeatureFlag("Feature A", true, []*User{}, 0)
 	c.Check(err, IsNil)
-	user := &User{Id: "alice@example.org"}
+
+	email := "alice@example.org"
+	percentage := crc32.ChecksumIEEE([]byte(email)) % 100
+
+	user := &User{Id: email}
 	c.Assert(ff.UserInPercentage(user), Equals, false)
 
-	ff, err = NewFeatureFlag("Feature A", true, []*User{}, 100)
+	ff, err = NewFeatureFlag("Feature A", true, []*User{}, percentage)
 	c.Check(err, IsNil)
 	c.Assert(ff.UserInPercentage(user), Equals, true)
 }

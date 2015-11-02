@@ -45,7 +45,7 @@ func (f *Features) IsInactive(featureKey string) (bool, error) {
 }
 
 func (f *Features) With(featureKey string, fn func()) {
-	if ok, _ := f.IsActive(featureKey); ok {
+	if ok, err := f.IsActive(featureKey); ok && err == nil {
 		fn()
 	}
 }
@@ -81,7 +81,7 @@ func (f *Features) UserHasAccess(featureKey string, userId string) bool {
 
 	// Percentage of users
 	if feature.UserInPercentage(user) {
-		return true
+		return feature.Enabled
 	}
 
 	return false

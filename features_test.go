@@ -163,7 +163,7 @@ func (s *S) TestUserHasAccessWhenTheFeatureIsInactive(c *C) {
 	c.Assert(s.Features.UserHasAccess(key, email), Equals, true)
 }
 
-func (s *S) TestUserHasAccessWhenTheFeatureIsActive(c *C) {
+func (s *S) TestUserHasAccessWithSpecificUser(c *C) {
 	key := "Feature Key"
 	email := "alice@example.org"
 
@@ -188,4 +188,15 @@ func (s *S) TestUserHasAccessWithPercentage(c *C) {
 	err = s.Features.Save(*feature)
 	c.Check(err, IsNil)
 	c.Assert(s.Features.UserHasAccess(key, email), Equals, true)
+}
+
+func (s *S) TestUserHasAccessWhenFeatureIsInactiveWithPercentage(c *C) {
+	key := "Feature Key"
+	email := "alice@example.org"
+	percentage := crc32.ChecksumIEEE([]byte(email)) % 100
+
+	feature, err := engine.NewFeatureFlag(key, false, []*engine.User{}, percentage)
+	err = s.Features.Save(*feature)
+	c.Check(err, IsNil)
+	c.Assert(s.Features.UserHasAccess(key, email), Equals, false)
 }
