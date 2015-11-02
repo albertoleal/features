@@ -68,7 +68,7 @@ Also known as: feature switch, feature flag, feature toggle, ...
   Features.UserHasAccess("Feature X", "alice@example.org")
   ```
 
-## User Percentages
+## User percentages
 
 If you're rolling out a feature, you might want to enable it for a percentage of your users. There are two ways you can achieve that: Either enabling the feature for a percentage of users or disabling that.
 
@@ -90,9 +90,9 @@ If you're rolling out a feature, you might want to enable it for a percentage of
   }
   ```
 
-## Specific Users
+## Specific users
 
-You might want to enable a feature for your team to try out and give feedback on before it's rolled out for everyone. To achieve this, you need to specify the users by doing the following:
+You might want to enable a feature for a set of users to try out and give feedback on before it's rolled out for everyone. To achieve this, you need to specify the users by doing the following:
 
   ```golang
   feature := engine.FeatureFlag{
