@@ -172,6 +172,11 @@ func (s *S) TestUserHasAccessWithSpecificUser(c *C) {
 	c.Check(err, IsNil)
 
 	c.Assert(s.Features.UserHasAccess(key, email), Equals, true)
+
+	// If the feature is enabled for a specific user, it should be considered inactive overall.
+	active, err := s.Features.IsActive(key)
+	c.Assert(active, Equals, false)
+	c.Check(err, Not(IsNil))
 }
 
 func (s *S) TestUserHasAccessWithPercentage(c *C) {

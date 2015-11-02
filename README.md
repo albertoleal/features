@@ -28,26 +28,26 @@
   Features.Save(feature)
   ```
 
-  Check if a feature is active:
+  Check if a feature is **active**:
 
   ```golang
   Features.IsActive("Feature X")
   ```
 
-  Check if a feature is inactive:
+  Check if a feature is **inactive**:
 
   ```golang
   Features.IsInactive("Feature X")
   ```
 
-  Execute an anonymous function if the feature is active:
+  Execute an anonymous function if the feature is **active**:
   ```golang
   Features.With("Feature X", func() {
     fmt.Println("`Feature X` is enabled!")
   })
   ```
 
-  Execute an anonymous function if the feature is inactive:
+  Execute an anonymous function if the feature is **inactive**:
   ```golang
   Features.Without("Feature X", func() {
     fmt.Println("`Feature X` is disabled!")

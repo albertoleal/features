@@ -36,6 +36,11 @@ func (f *Features) IsActive(featureKey string) (bool, error) {
 		return false, errors.New("Percentage is defined. Call `.UserHasAccess` instead.")
 	}
 
+	if len(feature.Users) > 0 {
+		// TODO: add log here
+		return false, errors.New("Users not empty. Call `.UserHasAccess` instead.")
+	}
+
 	return feature.Enabled == true, nil
 }
 
