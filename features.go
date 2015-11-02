@@ -23,7 +23,7 @@ func (f *Features) Save(feature engine.FeatureFlag) error {
 	return f.ng.UpsertFeatureFlag(feature)
 }
 
-func (f *Features) IsActive(featureKey string) (bool, error) {
+func (f *Features) IsEnabled(featureKey string) (bool, error) {
 	ffk := engine.FeatureFlagKey{Key: featureKey}
 	feature, err := f.ng.GetFeatureFlag(ffk)
 	if err != nil {
@@ -44,19 +44,19 @@ func (f *Features) IsActive(featureKey string) (bool, error) {
 	return feature.Enabled == true, nil
 }
 
-func (f *Features) IsInactive(featureKey string) (bool, error) {
-	out, err := f.IsActive(featureKey)
+func (f *Features) IsDisabled(featureKey string) (bool, error) {
+	out, err := f.IsEnabled(featureKey)
 	return !out, err
 }
 
 func (f *Features) With(featureKey string, fn func()) {
-	if ok, err := f.IsActive(featureKey); ok && err == nil {
+	if ok, err := f.IsEnabled(featureKey); ok && err == nil {
 		fn()
 	}
 }
 
 func (f *Features) Without(featureKey string, fn func()) {
-	if ok, _ := f.IsInactive(featureKey); ok {
+	if ok, _ := f.IsDisabled(featureKey); ok {
 		fn()
 	}
 }
@@ -74,7 +74,7 @@ func (f *Features) UserHasAccess(featureKey string, userId string) bool {
 	}
 
 	// Active
-	if ok, _ := f.IsActive(featureKey); ok {
+	if ok, _ := f.IsEnabled(featureKey); ok {
 		return true
 	}
 

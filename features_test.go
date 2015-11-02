@@ -30,15 +30,15 @@ func (s *S) TestSave(c *C) {
 		Enabled: true,
 	}
 	s.Features.Save(feature)
-	active, err := s.Features.IsActive(key)
+	active, err := s.Features.IsEnabled(key)
 	c.Assert(active, Equals, true)
 	c.Check(err, IsNil)
 }
 
-func (s *S) TestIsActive(c *C) {
+func (s *S) TestIsEnabled(c *C) {
 	// Invalid Key
 	key := "Feature Key"
-	active, err := s.Features.IsActive(key)
+	active, err := s.Features.IsEnabled(key)
 	c.Assert(active, Equals, false)
 	c.Check(err, Not(IsNil))
 
@@ -49,7 +49,7 @@ func (s *S) TestIsActive(c *C) {
 	}
 	s.Features.Save(feature)
 
-	active, err = s.Features.IsActive(key)
+	active, err = s.Features.IsEnabled(key)
 	c.Assert(active, Equals, true)
 	c.Check(err, IsNil)
 
@@ -59,12 +59,12 @@ func (s *S) TestIsActive(c *C) {
 		Enabled: false,
 	}
 	s.Features.Save(feature)
-	active, err = s.Features.IsActive(key)
+	active, err = s.Features.IsEnabled(key)
 	c.Assert(active, Equals, false)
 	c.Check(err, IsNil)
 }
 
-func (s *S) TestIsActiveWithPercentage(c *C) {
+func (s *S) TestIsEnabledWithPercentage(c *C) {
 	key := "Feature Key"
 	feature := engine.FeatureFlag{
 		Key:        key,
@@ -73,16 +73,16 @@ func (s *S) TestIsActiveWithPercentage(c *C) {
 	}
 	s.Features.Save(feature)
 
-	active, err := s.Features.IsActive(key)
+	active, err := s.Features.IsEnabled(key)
 	c.Assert(active, Equals, false)
 	c.Check(err, Not(IsNil))
 
 }
 
-func (s *S) TestIsInactive(c *C) {
+func (s *S) TestIsDisabled(c *C) {
 	// Invalid Key
 	key := "Feature Key"
-	inactive, err := s.Features.IsInactive(key)
+	inactive, err := s.Features.IsDisabled(key)
 	c.Assert(inactive, Equals, true)
 	c.Check(err, Not(IsNil))
 
@@ -93,7 +93,7 @@ func (s *S) TestIsInactive(c *C) {
 	}
 	s.Features.Save(feature)
 
-	inactive, err = s.Features.IsInactive(key)
+	inactive, err = s.Features.IsDisabled(key)
 	c.Assert(inactive, Equals, true)
 	c.Check(err, IsNil)
 
@@ -103,12 +103,12 @@ func (s *S) TestIsInactive(c *C) {
 		Enabled: true,
 	}
 	s.Features.Save(feature)
-	inactive, err = s.Features.IsInactive(key)
+	inactive, err = s.Features.IsDisabled(key)
 	c.Assert(inactive, Equals, false)
 	c.Check(err, IsNil)
 }
 
-func (s *S) TestIsInactiveWithPercentage(c *C) {
+func (s *S) TestIsDisabledWithPercentage(c *C) {
 	key := "Feature Key"
 	feature := engine.FeatureFlag{
 		Key:        key,
@@ -117,7 +117,7 @@ func (s *S) TestIsInactiveWithPercentage(c *C) {
 	}
 	s.Features.Save(feature)
 
-	inactive, err := s.Features.IsInactive(key)
+	inactive, err := s.Features.IsDisabled(key)
 	c.Assert(inactive, Equals, true)
 	c.Check(err, Not(IsNil))
 
@@ -152,7 +152,7 @@ func (s *S) TestWithout(c *C) {
 	c.Assert(status, Equals, true)
 }
 
-func (s *S) TestUserHasAccessWhenTheFeatureIsInactive(c *C) {
+func (s *S) TestUserHasAccessWhenTheFeatureIsDisabled(c *C) {
 	key := "Feature Key"
 	email := "alice@example.org"
 
@@ -174,7 +174,7 @@ func (s *S) TestUserHasAccessWithSpecificUser(c *C) {
 	c.Assert(s.Features.UserHasAccess(key, email), Equals, true)
 
 	// If the feature is enabled for a specific user, it should be considered inactive overall.
-	active, err := s.Features.IsActive(key)
+	active, err := s.Features.IsEnabled(key)
 	c.Assert(active, Equals, false)
 	c.Check(err, Not(IsNil))
 }
@@ -195,7 +195,7 @@ func (s *S) TestUserHasAccessWithPercentage(c *C) {
 	c.Assert(s.Features.UserHasAccess(key, email), Equals, true)
 }
 
-func (s *S) TestUserHasAccessWhenFeatureIsInactiveWithPercentage(c *C) {
+func (s *S) TestUserHasAccessWhenFeatureIsDisabledWithPercentage(c *C) {
 	key := "Feature Key"
 	email := "alice@example.org"
 	percentage := crc32.ChecksumIEEE([]byte(email)) % 100

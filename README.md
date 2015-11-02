@@ -2,6 +2,14 @@
 
 # Features
 
+Features helps you to determine whether or not a feature should be made available to one or more users.
+You can choose one of the following ways:
+
+  * Enable a feature only for a specific set of users;
+  * Enable or disabled for a percentage of users;
+  * Disable a feature.
+
+Also known as: feature switch, feature flag, feature toggle, ...
 
 ## Storage
   * Features is completely storage agnostic. You should be able to use your own storage, you just need to implement the [`Engine`](https://github.com/albertoleal/features/blob/master/engine/engine.go) interface.
@@ -28,19 +36,19 @@
   Features.Save(feature)
   ```
 
-  Check if a feature is **active**:
+  Check if a feature is **enabled**:
 
   ```golang
-  Features.IsActive("Feature X")
+  Features.IsEnabled("Feature X")
   ```
 
   Check if a feature is **inactive**:
 
   ```golang
-  Features.IsInactive("Feature X")
+  Features.IsDisabled("Feature X")
   ```
 
-  Execute an anonymous function if the feature is **active**:
+  Execute an anonymous function if the feature is **enabled**:
   ```golang
   Features.With("Feature X", func() {
     fmt.Println("`Feature X` is enabled!")

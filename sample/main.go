@@ -18,10 +18,10 @@ func main() {
 	}
 	Features.Save(feature)
 
-	active, _ := Features.IsActive("Feature X")
+	active, _ := Features.IsEnabled("Feature X")
 	fmt.Printf("Is `Feature X` enabled? %t \n", active)
 
-	deactive, _ := Features.IsInactive("Feature X")
+	deactive, _ := Features.IsDisabled("Feature X")
 	fmt.Printf("Is `Feature X` disabled? %t \n", deactive)
 
 	Features.With("Feature X", func() {
