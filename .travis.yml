@@ -9,6 +9,11 @@ go:
 env:
   - GOARCH=amd64
 
+before_install:
+  - go get github.com/axw/gocov/gocov
+  - go get github.com/mattn/goveralls
+  - if ! go get github.com/golang/tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
+
 install:
   - export PATH="$HOME/gopath/bin:$PATH"
   - go get github.com/tools/godep
@@ -17,6 +22,7 @@ install:
 
 script:
   - cd $HOME/gopath/src/github.com/albertoleal/features
+  - $HOME/gopath/bin/goveralls -service=travis-ci
   - go test -x ./...
 
 notifications:
