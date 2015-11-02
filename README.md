@@ -42,7 +42,7 @@ Also known as: feature switch, feature flag, feature toggle, ...
   Features.IsEnabled("Feature X")
   ```
 
-  Check if a feature is **inactive**:
+  Check if a feature is **disabled**:
 
   ```golang
   Features.IsDisabled("Feature X")
@@ -55,7 +55,7 @@ Also known as: feature switch, feature flag, feature toggle, ...
   })
   ```
 
-  Execute an anonymous function if the feature is **inactive**:
+  Execute an anonymous function if the feature is **disabled**:
   ```golang
   Features.Without("Feature X", func() {
     fmt.Println("`Feature X` is disabled!")
