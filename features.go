@@ -1,6 +1,8 @@
 package features
 
 import (
+	"errors"
+
 	"github.com/albertoleal/features/engine"
 )
 
@@ -21,35 +23,43 @@ func (f *Features) Save(feature engine.FeatureFlag) error {
 	return f.ng.UpsertFeatureFlag(feature)
 }
 
-func (f *Features) IsActive(featureKey string) bool {
+func (f *Features) IsActive(featureKey string) (bool, error) {
 	ffk := engine.FeatureFlagKey{Key: featureKey}
 	feature, err := f.ng.GetFeatureFlag(ffk)
 	if err != nil {
 		// TODO: add log here
-		return false
+		return false, err
 	}
-	return feature.Enabled == true
+
+	if feature.Percentage > 0 {
+		// TODO: add log here
+		return false, errors.New("Percentage is defined. Call `.UserHasAccess` instead.")
+	}
+
+	return feature.Enabled == true, nil
 }
 
-func (f *Features) IsInactive(featureKey string) bool {
-	return !f.IsActive(featureKey)
+func (f *Features) IsInactive(featureKey string) (bool, error) {
+	out, err := f.IsActive(featureKey)
+	return !out, err
 }
 
 func (f *Features) With(featureKey string, fn func()) {
-	if f.IsActive(featureKey) {
+	if ok, _ := f.IsActive(featureKey); ok {
 		fn()
 	}
 }
 
 func (f *Features) Without(featureKey string, fn func()) {
-	if f.IsInactive(featureKey) {
+	if ok, _ := f.IsInactive(featureKey); ok {
 		fn()
 	}
 }
 
 // User has access if:
 // - the feature is active;
-// - the feature is inactive but the user has explicit access to it
+// - the feature is inactive but the user has explicit access to it;
+// - the feature is active for a percentage of users.
 func (f *Features) UserHasAccess(featureKey string, userId string) bool {
 	ffk := engine.FeatureFlagKey{Key: featureKey}
 	feature, err := f.ng.GetFeatureFlag(ffk)
@@ -58,12 +68,19 @@ func (f *Features) UserHasAccess(featureKey string, userId string) bool {
 		return false
 	}
 
-	if f.IsActive(featureKey) {
+	// Active
+	if ok, _ := f.IsActive(featureKey); ok {
 		return true
 	}
 
+	// Specific users
 	user := &engine.User{Id: userId}
 	if feature.ContainsUser(user) {
+		return true
+	}
+
+	// Percentage of users
+	if feature.UserInPercentage(user) {
 		return true
 	}
 

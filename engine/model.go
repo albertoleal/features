@@ -2,6 +2,7 @@ package engine
 
 import (
 	"errors"
+	"hash/crc32"
 )
 
 type User struct {
@@ -9,9 +10,10 @@ type User struct {
 }
 
 type FeatureFlag struct {
-	Enabled bool    `json:"enabled"`
-	Key     string  `json:"key"`
-	Users   []*User `json:"users"`
+	Enabled    bool    `json:"enabled"`
+	Key        string  `json:"key"`
+	Users      []*User `json:"users"`
+	Percentage uint32  `json:"percentage"`
 }
 
 func (ff *FeatureFlag) ContainsUser(user *User) bool {
@@ -23,15 +25,20 @@ func (ff *FeatureFlag) ContainsUser(user *User) bool {
 	return false
 }
 
-func NewFeatureFlag(key string, enabled bool, users []*User) (*FeatureFlag, error) {
+func (ff *FeatureFlag) UserInPercentage(user *User) bool {
+	return crc32.ChecksumIEEE([]byte(user.Id))%100 <= ff.Percentage
+}
+
+func NewFeatureFlag(key string, enabled bool, users []*User, percentage uint32) (*FeatureFlag, error) {
 	if key == "" {
 		return nil, errors.New("Key cannot be empty.")
 	}
 
 	return &FeatureFlag{
-		Key:     key,
-		Enabled: enabled,
-		Users:   users,
+		Key:        key,
+		Enabled:    enabled,
+		Users:      users,
+		Percentage: percentage,
 	}, nil
 }
 
