@@ -1,3 +1,7 @@
+// Copyright 2015 Features authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package engine
 
 import (
@@ -12,7 +16,7 @@ type User struct {
 type FeatureFlag struct {
 	Enabled    bool    `json:"enabled"`
 	Key        string  `json:"key"`
-	Users      []*User `json:"users"`
+	Users      []*User `json:"users,omitempty"`
 	Percentage uint32  `json:"percentage"`
 }
 
@@ -55,5 +59,5 @@ func (n *NotFoundError) Error() string {
 		return n.Message
 	}
 
-	return "Feature Flag not found."
+	return "Feature flag not found."
 }

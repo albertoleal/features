@@ -1,3 +1,7 @@
+// Copyright 2015 Features authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package features_test
 
 import (
@@ -32,6 +36,19 @@ func (s *S) TestSave(c *C) {
 	s.Features.Save(feature)
 	active, err := s.Features.IsEnabled(key)
 	c.Assert(active, Equals, true)
+	c.Check(err, IsNil)
+}
+
+func (s *S) TestDelete(c *C) {
+	key := "Feature Key"
+	err := s.Features.Delete(key)
+	c.Check(err, Not(IsNil))
+	feature := engine.FeatureFlag{
+		Key:     key,
+		Enabled: true,
+	}
+	s.Features.Save(feature)
+	err = s.Features.Delete(key)
 	c.Check(err, IsNil)
 }
 
@@ -204,4 +221,26 @@ func (s *S) TestUserHasAccessWhenFeatureIsDisabledWithPercentage(c *C) {
 	err = s.Features.Save(*feature)
 	c.Check(err, IsNil)
 	c.Assert(s.Features.UserHasAccess(key, email), Equals, false)
+}
+
+func (s *S) TestValid(c *C) {
+	key := "Feature Key"
+	feature := engine.FeatureFlag{
+		Key:     key,
+		Enabled: true,
+	}
+	err := s.Features.Save(feature)
+	c.Check(err, IsNil)
+
+	ok, err := s.Features.Valid(&feature)
+	c.Assert(ok, Equals, false)
+	c.Check(err, Not(IsNil))
+
+	feature = engine.FeatureFlag{
+		Key:     "",
+		Enabled: true,
+	}
+	ok, err = s.Features.Valid(&feature)
+	c.Assert(ok, Equals, false)
+	c.Check(err, Not(IsNil))
 }

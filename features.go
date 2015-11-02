@@ -1,3 +1,7 @@
+// Copyright 2015 Features authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package features
 
 import (
@@ -21,6 +25,11 @@ func New(ng engine.Engine) *Features {
 
 func (f *Features) Save(feature engine.FeatureFlag) error {
 	return f.ng.UpsertFeatureFlag(feature)
+}
+
+func (f *Features) Delete(featureKey string) error {
+	ffk := engine.FeatureFlagKey{Key: featureKey}
+	return f.ng.DeleteFeatureFlag(ffk)
 }
 
 func (f *Features) IsEnabled(featureKey string) (bool, error) {
@@ -90,4 +99,17 @@ func (f *Features) UserHasAccess(featureKey string, userId string) bool {
 	}
 
 	return false
+}
+
+func (f *Features) Valid(ff *engine.FeatureFlag) (bool, error) {
+	ffk := engine.FeatureFlagKey{Key: ff.Key}
+	if feature, _ := f.ng.GetFeatureFlag(ffk); feature != nil {
+		return false, errors.New("There's another feature for the same key value.")
+	}
+
+	if ff.Key == "" {
+		return false, errors.New("Key cannot be empty.")
+	}
+
+	return true, nil
 }
