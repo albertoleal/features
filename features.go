@@ -13,6 +13,7 @@ import (
 
 type Features interface {
 	Save(engine.FeatureFlag) error
+	List() ([]engine.FeatureFlag, error)
 	Find(featureKey string) (*engine.FeatureFlag, error)
 	Delete(featureKey string) error
 	IsEnabled(featureKey string) (bool, error)
@@ -51,6 +52,10 @@ func (f *features) Delete(featureKey string) error {
 func (f *features) Find(featureKey string) (*engine.FeatureFlag, error) {
 	ffk := engine.FeatureFlagKey{Key: featureKey}
 	return f.ng.GetFeatureFlag(ffk)
+}
+
+func (f *features) List() ([]engine.FeatureFlag, error) {
+	return f.ng.GetFeatureFlags()
 }
 
 func (f *features) IsEnabled(featureKey string) (bool, error) {

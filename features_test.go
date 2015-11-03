@@ -78,6 +78,22 @@ func (s *S) TestFind(c *C) {
 	c.Check(err, IsNil)
 }
 
+func (s *S) TestList(c *C) {
+	ffs, err := s.Features.List()
+	c.Assert(len(ffs), Equals, 0)
+	c.Check(err, IsNil)
+
+	feature := engine.FeatureFlag{
+		Key:     "feature-key",
+		Enabled: true,
+	}
+	s.Features.Save(feature)
+
+	ffs, err = s.Features.List()
+	c.Assert(len(ffs), Equals, 1)
+	c.Check(err, IsNil)
+}
+
 func (s *S) TestIsEnabled(c *C) {
 	// Invalid Key
 	key := "feature-key"

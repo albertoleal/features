@@ -114,6 +114,22 @@ func makeFind(feature features.Features) endpoint.Endpoint {
 	}
 }
 
+func makeList(feature features.Features) endpoint.Endpoint {
+	return func(ctx context.Context, feature_key interface{}) (interface{}, error) {
+
+		ffs, err := feature.List()
+		if err != nil {
+			return nil, err
+		}
+
+		cs := &CollectionSerializer{
+			Items: ffs,
+			Count: len(ffs),
+		}
+		return HTTPResponse{StatusCode: http.StatusOK, Body: cs}, nil
+	}
+}
+
 func makeValidate(feature features.Features) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(validationRequest)

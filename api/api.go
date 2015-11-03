@@ -71,6 +71,15 @@ func NewApi(ng engine.Engine) *Api {
 	)
 	api.router.AddHandler(RouterArguments{Path: "/features/{feature_key}", Methods: []string{"GET"}, HandlerNormal: findHandler})
 
+	listHandler := httptransport.NewServer(
+		ctx,
+		makeList(ffs),
+		decodeFeatureFlagQueryString,
+		encodeResponse,
+		httptransport.ServerErrorEncoder(handleErrorEncoder),
+	)
+	api.router.AddHandler(RouterArguments{Path: "/features", Methods: []string{"GET"}, HandlerNormal: listHandler})
+
 	validateHandler := httptransport.NewServer(
 		ctx,
 		makeValidate(ffs),

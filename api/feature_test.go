@@ -319,3 +319,27 @@ func (s *S) TestValidateEnabledFeatureInPercentage(c *C) {
 	c.Assert(code, Equals, http.StatusOK)
 	c.Assert(string(body), Equals, "")
 }
+
+func (s *S) TestListAllFeatures(c *C) {
+	featureKey := "login_via_email"
+	feature := engine.FeatureFlag{
+		Key:     featureKey,
+		Enabled: false,
+	}
+	s.ng.UpsertFeatureFlag(feature)
+
+	defer func() {
+		ffk := engine.FeatureFlagKey{Key: featureKey}
+		s.ng.DeleteFeatureFlag(ffk)
+	}()
+
+	headers, code, body, _ := httpClient.MakeRequest(requests.Args{
+		AcceptableCode: http.StatusOK,
+		Method:         "GET",
+		Path:           "/features",
+	})
+
+	c.Assert(code, Equals, http.StatusOK)
+	c.Assert(headers.Get("Content-Type"), Equals, "application/json")
+	c.Assert(string(body), Equals, "{\"items\":[{\"enabled\":false,\"key\":\"login_via_email\",\"percentage\":0}],\"item_count\":1}\n")
+}
