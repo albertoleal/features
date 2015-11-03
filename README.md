@@ -16,7 +16,6 @@ Also known as: feature switch, feature flag, feature toggle, ...
   * Features is completely storage agnostic. You should be able to use your own storage, you just need to implement the [`Engine`](https://github.com/albertoleal/features/blob/master/engine/engine.go) interface.
   * This library comes with an in memory store, but it's basically used for testing. You should not use this in production.
 
-
 ## How it works
 
   Create an instance of Features type passing the storage as an argument:
@@ -100,5 +99,91 @@ You might want to enable a feature for a set of users to try out and give feedba
     Key:     "Feature X",
     Enabled: true,
     Users:   []*engine.User{&engine.User{Id: "alice@example.org"}},
+  }
+  ```
+
+## HTTP API
+  Features comes with an HTTP API that's used by the SDKs, but you **should not** expose that to the world because there's no authentication layer.
+
+### API endpoints
+  - [`POST` /features](#create-a-new-feature-flag) - Create a new feature flag
+  - [`PUT` /features/:feature-key](#update-an-existing-feature-flag) - Update an existing feature flag
+  - [`DELETE` /features/:feature-key](#delete-an-existing-feature-flag) - Delete an existing feature flag
+  - [`GET` /features/:feature-key](#get-an-existing-feature-flag) - Get an existing feature flag
+  - [`GET` /features](#list-all-feature-flags) - List all feature flags
+
+  #### Create a new feature flag
+  ```bash
+  curl -i http://localhost:8000/features -XPOST -d '{"key": "login-via-email", "percentage": 90, "enabled": true, "users": [{"id": "alice@example.org"}]}'
+  ```
+  Response:
+  ```bash
+  HTTP/1.1 201 Created
+  Content-Type: application/json
+  Date: Tue, 03 Nov 2015 23:21:07 GMT
+  Content-Length: 94
+
+  {"enabled":true,"key":"login-via-email","users":[{"id":"alice@example.org"}],"percentage":90}
+  ```
+
+  #### Update an existing feature flag
+  ```bash
+  curl -i http://localhost:8000/features/login-via-email -XPUT -d '{"key": "login-via-email", "percentage": 90, "enabled": false, "users": [{"id": "bob@example.org"}]}'
+  ```
+  Response:
+  ```bash
+  HTTP/1.1 200 OK
+  Content-Type: application/json
+  Date: Tue, 03 Nov 2015 23:22:05 GMT
+  Content-Length: 93
+
+  {"enabled":false,"key":"login-via-email","users":[{"id":"bob@example.org"}],"percentage":90}
+  ```
+
+  #### Delete an existing feature flag
+  ```bash
+  curl -i http://localhost:8000/features/login-via-email -XDELETE
+  ```
+  Response:
+  ```bash
+  HTTP/1.1 204 No Content
+  Content-Type: application/json
+  Date: Tue, 03 Nov 2015 23:24:46 GMT
+  ```
+
+  #### Get an existing feature flag
+  ```bash
+  curl -i http://localhost:8000/features/login-via-email
+  ```
+  Response:
+  ```bash
+  HTTP/1.1 200 OK
+  Content-Type: application/json
+  Date: Tue, 03 Nov 2015 23:26:22 GMT
+  Content-Length: 94
+
+  {"enabled":true,"key":"login-via-email","users":[{"id":"alice@example.org"}],"percentage":90}
+  ```
+
+  #### List all feature flags
+  ```bash
+  curl -i http://localhost:8000/features
+  ```
+  Response:
+  ```javascript
+  {
+    "items": [
+      {
+        "percentage": 90,
+        "enabled": true,
+        "users": [
+          {
+            "id": "alice@example.org"
+          }
+        ],
+        "key": "login-via-email"
+      }
+    ],
+    "item_count": 1
   }
   ```

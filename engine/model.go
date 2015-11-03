@@ -10,7 +10,7 @@ import (
 )
 
 type User struct {
-	Id string
+	Id string `json:"id"`
 }
 
 type FeatureFlag struct {
