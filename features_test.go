@@ -28,7 +28,7 @@ func (s *S) SetUpTest(c *C) {
 }
 
 func (s *S) TestSave(c *C) {
-	key := "Feature Key"
+	key := "feature-key"
 	feature := engine.FeatureFlag{
 		Key:     key,
 		Enabled: true,
@@ -49,7 +49,7 @@ func (s *S) TestSaveWithInvalidData(c *C) {
 }
 
 func (s *S) TestDelete(c *C) {
-	key := "Feature Key"
+	key := "feature-key"
 	err := s.Features.Delete(key)
 	c.Check(err, Not(IsNil))
 
@@ -63,7 +63,7 @@ func (s *S) TestDelete(c *C) {
 }
 
 func (s *S) TestFind(c *C) {
-	key := "Feature Key"
+	key := "feature-key"
 	ff, err := s.Features.Find(key)
 	c.Check(ff, IsNil)
 	c.Check(err, Not(IsNil))
@@ -80,7 +80,7 @@ func (s *S) TestFind(c *C) {
 
 func (s *S) TestIsEnabled(c *C) {
 	// Invalid Key
-	key := "Feature Key"
+	key := "feature-key"
 	active, err := s.Features.IsEnabled(key)
 	c.Assert(active, Equals, false)
 	c.Check(err, Not(IsNil))
@@ -108,7 +108,7 @@ func (s *S) TestIsEnabled(c *C) {
 }
 
 func (s *S) TestIsEnabledWithPercentage(c *C) {
-	key := "Feature Key"
+	key := "feature-key"
 	feature := engine.FeatureFlag{
 		Key:        key,
 		Enabled:    true,
@@ -124,7 +124,7 @@ func (s *S) TestIsEnabledWithPercentage(c *C) {
 
 func (s *S) TestIsDisabled(c *C) {
 	// Invalid Key
-	key := "Feature Key"
+	key := "feature-key"
 	inactive, err := s.Features.IsDisabled(key)
 	c.Assert(inactive, Equals, true)
 	c.Check(err, Not(IsNil))
@@ -152,7 +152,7 @@ func (s *S) TestIsDisabled(c *C) {
 }
 
 func (s *S) TestIsDisabledWithPercentage(c *C) {
-	key := "Feature Key"
+	key := "feature-key"
 	feature := engine.FeatureFlag{
 		Key:        key,
 		Enabled:    false,
@@ -168,7 +168,7 @@ func (s *S) TestIsDisabledWithPercentage(c *C) {
 
 func (s *S) TestWith(c *C) {
 	var status bool = true
-	key := "Feature Key"
+	key := "feature-key"
 	s.Features.With(key, func() {
 		status = false
 	})
@@ -196,14 +196,14 @@ func (s *S) TestWithout(c *C) {
 }
 
 func (s *S) TestUserHasAccessWhenTheFeatureIsNotFound(c *C) {
-	key := "Feature Key"
+	key := "feature-key"
 	email := "alice@example.org"
 
 	c.Assert(s.Features.UserHasAccess(key, email), Equals, false)
 }
 
 func (s *S) TestUserHasAccessWhenTheFeatureIsEnabled(c *C) {
-	key := "Feature Key"
+	key := "feature-key"
 	email := "alice@example.org"
 
 	feature, err := engine.NewFeatureFlag(key, true, []*engine.User{&engine.User{Id: email}}, 0)
@@ -214,7 +214,7 @@ func (s *S) TestUserHasAccessWhenTheFeatureIsEnabled(c *C) {
 }
 
 func (s *S) TestUserHasAccessWhenTheFeatureIsDisabled(c *C) {
-	key := "Feature Key"
+	key := "feature-key"
 	email := "alice@example.org"
 
 	feature, err := engine.NewFeatureFlag(key, false, []*engine.User{&engine.User{Id: email}}, 0)
@@ -225,7 +225,7 @@ func (s *S) TestUserHasAccessWhenTheFeatureIsDisabled(c *C) {
 }
 
 func (s *S) TestUserHasAccessWithSpecificUser(c *C) {
-	key := "Feature Key"
+	key := "feature-key"
 	email := "alice@example.org"
 
 	feature, err := engine.NewFeatureFlag(key, true, []*engine.User{&engine.User{Id: email}}, 0)
@@ -241,7 +241,7 @@ func (s *S) TestUserHasAccessWithSpecificUser(c *C) {
 }
 
 func (s *S) TestUserHasAccessWithPercentage(c *C) {
-	key := "Feature Key"
+	key := "feature-key"
 	email := "alice@example.org"
 	percentage := crc32.ChecksumIEEE([]byte(email)) % 100
 
@@ -257,7 +257,7 @@ func (s *S) TestUserHasAccessWithPercentage(c *C) {
 }
 
 func (s *S) TestUserHasAccessWhenFeatureIsDisabledWithPercentage(c *C) {
-	key := "Feature Key"
+	key := "feature-key"
 	email := "alice@example.org"
 	percentage := crc32.ChecksumIEEE([]byte(email)) % 100
 

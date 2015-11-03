@@ -8,6 +8,7 @@ import (
 	"errors"
 
 	"github.com/albertoleal/features/engine"
+	utils "github.com/mrvdot/golang-utils"
 )
 
 type Features interface {
@@ -34,6 +35,7 @@ func New(ng engine.Engine) Features {
 // It requires to inform the following field(s): Key.
 // It returns an error if when it fails.
 func (f *features) Save(feature engine.FeatureFlag) error {
+	feature.Key = utils.GenerateSlug(feature.Key)
 	if _, err := f.valid(&feature); err != nil {
 		return err
 	}
