@@ -11,7 +11,6 @@ import (
 
 	"github.com/albertoleal/features"
 	"github.com/albertoleal/features/engine"
-	"github.com/albertoleal/features/services"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/tylerb/graceful"
 	"golang.org/x/net/context"
@@ -23,23 +22,22 @@ const (
 )
 
 type Api struct {
-	features *features.Features
-	router   *Router
+	ng     engine.Engine
+	router *Router
 }
 
 func NewApi(ng engine.Engine) *Api {
-	ff := features.New(ng)
-	api := &Api{router: NewRouter(), features: ff}
+	api := &Api{router: NewRouter(), ng: ng}
 
 	api.router.NotFoundHandler(http.HandlerFunc(api.notFoundHandler))
 	api.router.AddHandler(RouterArguments{Path: "/", Methods: []string{"GET"}, Handler: homeHandler})
 	ctx := context.Background()
 
-	featureService := services.NewFeatureService(api.features)
+	ffs := features.New(api.ng)
 
 	createFeatureFlagHandler := httptransport.NewServer(
 		ctx,
-		makeCreateFeatureFlag(featureService),
+		makeCreateFeatureFlag(ffs),
 		decodeFeatureFlagRequest,
 		encodeResponse,
 		httptransport.ServerErrorEncoder(handleErrorEncoder),

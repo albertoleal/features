@@ -9,8 +9,8 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/albertoleal/features"
 	"github.com/albertoleal/features/engine"
-	"github.com/albertoleal/features/services"
 	"github.com/go-kit/kit/endpoint"
 	"golang.org/x/net/context"
 )
@@ -31,11 +31,17 @@ func decodeFeatureFlagRequest(r *http.Request) (interface{}, error) {
 	return request, nil
 }
 
-func makeCreateFeatureFlag(service services.FeatureService) endpoint.Endpoint {
+func makeCreateFeatureFlag(feature features.Features) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(featureFlagRequest)
-		ff := &req.FeatureFlag
-		err := service.CreateFeatureFlag(ff)
+		ff := req.FeatureFlag
+
+		if ff, _ := feature.Find(ff.Key); ff != nil {
+			errResp := NewErrorResponse(E_BAD_REQUEST, "There's another feature for the same key value.")
+			return HTTPResponse{StatusCode: http.StatusBadRequest, Body: errResp}, nil
+		}
+
+		err := feature.Save(ff)
 		if err != nil {
 			return nil, err
 		}

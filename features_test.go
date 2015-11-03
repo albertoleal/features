@@ -15,7 +15,7 @@ import (
 )
 
 type S struct {
-	Features *features.Features
+	Features features.Features
 }
 
 var _ = Suite(&S{})
@@ -39,16 +39,42 @@ func (s *S) TestSave(c *C) {
 	c.Check(err, IsNil)
 }
 
+func (s *S) TestSaveWithInvalidData(c *C) {
+	feature := engine.FeatureFlag{
+		Key:     "",
+		Enabled: false,
+	}
+
+	c.Check(s.Features.Save(feature), Not(IsNil))
+}
+
 func (s *S) TestDelete(c *C) {
 	key := "Feature Key"
 	err := s.Features.Delete(key)
 	c.Check(err, Not(IsNil))
+
 	feature := engine.FeatureFlag{
 		Key:     key,
 		Enabled: true,
 	}
 	s.Features.Save(feature)
 	err = s.Features.Delete(key)
+	c.Check(err, IsNil)
+}
+
+func (s *S) TestFind(c *C) {
+	key := "Feature Key"
+	ff, err := s.Features.Find(key)
+	c.Check(ff, IsNil)
+	c.Check(err, Not(IsNil))
+
+	feature := engine.FeatureFlag{
+		Key:     key,
+		Enabled: true,
+	}
+	s.Features.Save(feature)
+	ff, err = s.Features.Find(key)
+	c.Assert(ff, DeepEquals, &feature)
 	c.Check(err, IsNil)
 }
 
@@ -239,26 +265,4 @@ func (s *S) TestUserHasAccessWhenFeatureIsDisabledWithPercentage(c *C) {
 	err = s.Features.Save(*feature)
 	c.Check(err, IsNil)
 	c.Assert(s.Features.UserHasAccess(key, email), Equals, false)
-}
-
-func (s *S) TestValid(c *C) {
-	key := "Feature Key"
-	feature := engine.FeatureFlag{
-		Key:     key,
-		Enabled: true,
-	}
-	ok, err := s.Features.Valid(&feature)
-	c.Assert(ok, Equals, true)
-	c.Check(err, IsNil)
-
-	err = s.Features.Save(feature)
-	c.Check(err, IsNil)
-
-	feature = engine.FeatureFlag{
-		Key:     "",
-		Enabled: true,
-	}
-	ok, err = s.Features.Valid(&feature)
-	c.Assert(ok, Equals, false)
-	c.Check(err, Not(IsNil))
 }

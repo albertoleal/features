@@ -80,5 +80,5 @@ func (s *S) TestCreateFeatureWithExistingKey(c *C) {
 
 	c.Assert(code, Equals, http.StatusBadRequest)
 	c.Assert(headers.Get("Content-Type"), Equals, "application/json")
-	c.Assert(string(body), Equals, "{\"error\":\"bad_request\",\"error_description\":\"There's another feature for the same key value.\"}")
+	c.Assert(string(body), Equals, "{\"error\":\"bad_request\",\"error_description\":\"There's another feature for the same key value.\"}\n")
 }
