@@ -106,11 +106,11 @@ You might want to enable a feature for a set of users to try out and give feedba
   Features comes with an HTTP API that's used by the SDKs, but you **should not** expose that to the world because there's no authentication layer.
 
 ### API endpoints
-  - [`POST` /features](#create-a-new-feature-flag) - Create a new feature flag
-  - [`PUT` /features/:feature-key](#update-an-existing-feature-flag) - Update an existing feature flag
-  - [`DELETE` /features/:feature-key](#delete-an-existing-feature-flag) - Delete an existing feature flag
-  - [`GET` /features](#list-all-feature-flags) - List all feature flags
-  - [`GET` /features/:feature-key](#get-an-existing-feature-flag) - Get an existing feature flag
+ - [`POST` /features](#create-a-new-feature-flag) - Create a new feature flag.
+ - [`PUT` /features/:feature-key](#update-an-existing-feature-flag) - Update an existing feature flag.
+ - [`DELETE` /features/:feature-key](#delete-an-existing-feature-flag) - Delete an existing feature flag.
+ - [`GET` /features](#list-all-feature-flags) - List all feature flags.
+ - [`GET` /features/:feature-key](#get-an-existing-feature-flag) - Get an existing feature flag.
 
   #### Create a new feature flag
   ```bash
