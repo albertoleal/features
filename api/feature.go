@@ -16,6 +16,23 @@ import (
 	"golang.org/x/net/context"
 )
 
+type validationRequest struct {
+	Key  string `json:"key"`
+	User string `json:"user"`
+}
+
+func decodeValidationRequest(r *http.Request) (interface{}, error) {
+	var request validationRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		switch {
+		case err == io.EOF:
+		case err != nil:
+			return nil, err
+		}
+	}
+	return request, nil
+}
+
 type featureFlagRequest struct {
 	engine.FeatureFlag
 }
@@ -36,7 +53,7 @@ func decodeFeatureFlagRequest(r *http.Request) (interface{}, error) {
 	return request, nil
 }
 
-func makeCreateFeatureFlag(feature features.Features) endpoint.Endpoint {
+func makeCreate(feature features.Features) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(featureFlagRequest)
 		ff := req.FeatureFlag
@@ -55,7 +72,7 @@ func makeCreateFeatureFlag(feature features.Features) endpoint.Endpoint {
 	}
 }
 
-func makeUpdateFeatureFlag(feature features.Features) endpoint.Endpoint {
+func makeUpdate(feature features.Features) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(featureFlagRequest)
 		ff := req.FeatureFlag
@@ -73,7 +90,7 @@ func makeUpdateFeatureFlag(feature features.Features) endpoint.Endpoint {
 	}
 }
 
-func makeDeleteFeatureFlag(feature features.Features) endpoint.Endpoint {
+func makeDelete(feature features.Features) endpoint.Endpoint {
 	return func(ctx context.Context, feature_key interface{}) (interface{}, error) {
 		fk := feature_key.(string)
 		err := feature.Delete(fk)
@@ -85,7 +102,7 @@ func makeDeleteFeatureFlag(feature features.Features) endpoint.Endpoint {
 	}
 }
 
-func makeFindFeatureFlag(feature features.Features) endpoint.Endpoint {
+func makeFind(feature features.Features) endpoint.Endpoint {
 	return func(ctx context.Context, feature_key interface{}) (interface{}, error) {
 		fk := feature_key.(string)
 		ff, err := feature.Find(fk)
@@ -94,5 +111,31 @@ func makeFindFeatureFlag(feature features.Features) endpoint.Endpoint {
 		}
 
 		return HTTPResponse{StatusCode: http.StatusOK, Body: ff}, nil
+	}
+}
+
+func makeValidate(feature features.Features) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(validationRequest)
+
+		ff, err := feature.Find(req.Key)
+		if err != nil {
+			return HTTPResponse{StatusCode: http.StatusForbidden}, nil
+		}
+
+		var access bool
+		if ff.Percentage > 0 || len(ff.Users) > 0 {
+			if access = feature.UserHasAccess(req.Key, req.User); access {
+				return HTTPResponse{StatusCode: http.StatusOK}, nil
+			} else {
+				return HTTPResponse{StatusCode: http.StatusForbidden}, nil
+			}
+		}
+
+		if access, _ = feature.IsEnabled(req.Key); access {
+			return HTTPResponse{StatusCode: http.StatusOK}, nil
+		}
+
+		return HTTPResponse{StatusCode: http.StatusForbidden}, nil
 	}
 }

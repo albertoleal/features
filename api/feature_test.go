@@ -193,3 +193,129 @@ func (s *S) TestFindFeature(c *C) {
 	c.Assert(headers.Get("Content-Type"), Equals, "application/json")
 	c.Assert(string(body), Equals, "{\"enabled\":false,\"key\":\"login_via_email\",\"percentage\":0}\n")
 }
+
+func (s *S) TestValidateUserAccess(c *C) {
+	featureKey := "login_via_email"
+	email := "alice@example.org"
+	feature := engine.FeatureFlag{
+		Key:     featureKey,
+		Enabled: false,
+		Users:   []*engine.User{&engine.User{Id: email}},
+	}
+	s.ng.UpsertFeatureFlag(feature)
+
+	defer func() {
+		ffk := engine.FeatureFlagKey{Key: featureKey}
+		s.ng.DeleteFeatureFlag(ffk)
+	}()
+
+	_, code, body, _ := httpClient.MakeRequest(requests.Args{
+		AcceptableCode: http.StatusOK,
+		Method:         "PUT",
+		Path:           "/features",
+		Body:           fmt.Sprintf(`{"key": "%s", "user": "%s"}`, featureKey, email),
+	})
+
+	c.Assert(code, Equals, http.StatusOK)
+	c.Assert(string(body), Equals, "")
+}
+
+func (s *S) TestValidateDisabledFeature(c *C) {
+	featureKey := "login_via_email"
+	feature := engine.FeatureFlag{
+		Key:     featureKey,
+		Enabled: false,
+	}
+	s.ng.UpsertFeatureFlag(feature)
+
+	defer func() {
+		ffk := engine.FeatureFlagKey{Key: featureKey}
+		s.ng.DeleteFeatureFlag(ffk)
+	}()
+
+	_, code, body, _ := httpClient.MakeRequest(requests.Args{
+		AcceptableCode: http.StatusForbidden,
+		Method:         "PUT",
+		Path:           "/features",
+		Body:           fmt.Sprintf(`{"key": "%s"}`, featureKey),
+	})
+
+	c.Assert(code, Equals, http.StatusForbidden)
+	c.Assert(string(body), Equals, "")
+}
+
+func (s *S) TestValidateEnabledFeature(c *C) {
+	featureKey := "login_via_email"
+	feature := engine.FeatureFlag{
+		Key:     featureKey,
+		Enabled: true,
+	}
+	s.ng.UpsertFeatureFlag(feature)
+
+	defer func() {
+		ffk := engine.FeatureFlagKey{Key: featureKey}
+		s.ng.DeleteFeatureFlag(ffk)
+	}()
+
+	_, code, body, _ := httpClient.MakeRequest(requests.Args{
+		AcceptableCode: http.StatusOK,
+		Method:         "PUT",
+		Path:           "/features",
+		Body:           fmt.Sprintf(`{"key": "%s"}`, featureKey),
+	})
+
+	c.Assert(code, Equals, http.StatusOK)
+	c.Assert(string(body), Equals, "")
+}
+
+func (s *S) TestValidateEnabledFeatureOutOfPercentage(c *C) {
+	featureKey := "login_via_email"
+	email := "alice@example.org"
+	feature := engine.FeatureFlag{
+		Key:        featureKey,
+		Enabled:    true,
+		Percentage: 50,
+	}
+	s.ng.UpsertFeatureFlag(feature)
+
+	defer func() {
+		ffk := engine.FeatureFlagKey{Key: featureKey}
+		s.ng.DeleteFeatureFlag(ffk)
+	}()
+
+	_, code, body, _ := httpClient.MakeRequest(requests.Args{
+		AcceptableCode: http.StatusForbidden,
+		Method:         "PUT",
+		Path:           "/features",
+		Body:           fmt.Sprintf(`{"key": "%s", "user": "%s"}`, featureKey, email),
+	})
+
+	c.Assert(code, Equals, http.StatusForbidden)
+	c.Assert(string(body), Equals, "")
+}
+
+func (s *S) TestValidateEnabledFeatureInPercentage(c *C) {
+	featureKey := "login_via_email"
+	email := "alice@example.org"
+	feature := engine.FeatureFlag{
+		Key:        featureKey,
+		Enabled:    true,
+		Percentage: 51,
+	}
+	s.ng.UpsertFeatureFlag(feature)
+
+	defer func() {
+		ffk := engine.FeatureFlagKey{Key: featureKey}
+		s.ng.DeleteFeatureFlag(ffk)
+	}()
+
+	_, code, body, _ := httpClient.MakeRequest(requests.Args{
+		AcceptableCode: http.StatusOK,
+		Method:         "PUT",
+		Path:           "/features",
+		Body:           fmt.Sprintf(`{"key": "%s", "user": "%s"}`, featureKey, email),
+	})
+
+	c.Assert(code, Equals, http.StatusOK)
+	c.Assert(string(body), Equals, "")
+}

@@ -35,41 +35,50 @@ func NewApi(ng engine.Engine) *Api {
 
 	ffs := features.New(api.ng)
 
-	createFeatureFlagHandler := httptransport.NewServer(
+	createHandler := httptransport.NewServer(
 		ctx,
-		makeCreateFeatureFlag(ffs),
+		makeCreate(ffs),
 		decodeFeatureFlagRequest,
 		encodeResponse,
 		httptransport.ServerErrorEncoder(handleErrorEncoder),
 	)
-	api.router.AddHandler(RouterArguments{Path: "/features", Methods: []string{"POST"}, HandlerNormal: createFeatureFlagHandler})
+	api.router.AddHandler(RouterArguments{Path: "/features", Methods: []string{"POST"}, HandlerNormal: createHandler})
 
-	updateFeatureFlagHandler := httptransport.NewServer(
+	updateHandler := httptransport.NewServer(
 		ctx,
-		makeUpdateFeatureFlag(ffs),
+		makeUpdate(ffs),
 		decodeFeatureFlagRequest,
 		encodeResponse,
 		httptransport.ServerErrorEncoder(handleErrorEncoder),
 	)
-	api.router.AddHandler(RouterArguments{Path: "/features/{feature_key}", Methods: []string{"PUT"}, HandlerNormal: updateFeatureFlagHandler})
+	api.router.AddHandler(RouterArguments{Path: "/features/{feature_key}", Methods: []string{"PUT"}, HandlerNormal: updateHandler})
 
-	deleteFeatureFlagHandler := httptransport.NewServer(
+	deleteHandler := httptransport.NewServer(
 		ctx,
-		makeDeleteFeatureFlag(ffs),
+		makeDelete(ffs),
 		decodeFeatureFlagQueryString,
 		encodeResponse,
 		httptransport.ServerErrorEncoder(handleErrorEncoder),
 	)
-	api.router.AddHandler(RouterArguments{Path: "/features/{feature_key}", Methods: []string{"DELETE"}, HandlerNormal: deleteFeatureFlagHandler})
+	api.router.AddHandler(RouterArguments{Path: "/features/{feature_key}", Methods: []string{"DELETE"}, HandlerNormal: deleteHandler})
 
-	findFeatureFlagHandler := httptransport.NewServer(
+	findHandler := httptransport.NewServer(
 		ctx,
-		makeFindFeatureFlag(ffs),
+		makeFind(ffs),
 		decodeFeatureFlagQueryString,
 		encodeResponse,
 		httptransport.ServerErrorEncoder(handleErrorEncoder),
 	)
-	api.router.AddHandler(RouterArguments{Path: "/features/{feature_key}", Methods: []string{"GET"}, HandlerNormal: findFeatureFlagHandler})
+	api.router.AddHandler(RouterArguments{Path: "/features/{feature_key}", Methods: []string{"GET"}, HandlerNormal: findHandler})
+
+	validateHandler := httptransport.NewServer(
+		ctx,
+		makeValidate(ffs),
+		decodeValidationRequest,
+		encodeResponse,
+		httptransport.ServerErrorEncoder(handleErrorEncoder),
+	)
+	api.router.AddHandler(RouterArguments{Path: "/features", Methods: []string{"PUT"}, HandlerNormal: validateHandler})
 
 	return api
 }
