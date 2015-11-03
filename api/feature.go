@@ -84,3 +84,15 @@ func makeDeleteFeatureFlag(feature features.Features) endpoint.Endpoint {
 		return HTTPResponse{StatusCode: http.StatusNoContent}, nil
 	}
 }
+
+func makeFindFeatureFlag(feature features.Features) endpoint.Endpoint {
+	return func(ctx context.Context, feature_key interface{}) (interface{}, error) {
+		fk := feature_key.(string)
+		ff, err := feature.Find(fk)
+		if err != nil {
+			return nil, err
+		}
+
+		return HTTPResponse{StatusCode: http.StatusOK, Body: ff}, nil
+	}
+}

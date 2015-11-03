@@ -62,6 +62,15 @@ func NewApi(ng engine.Engine) *Api {
 	)
 	api.router.AddHandler(RouterArguments{Path: "/features/{feature_key}", Methods: []string{"DELETE"}, HandlerNormal: deleteFeatureFlagHandler})
 
+	findFeatureFlagHandler := httptransport.NewServer(
+		ctx,
+		makeFindFeatureFlag(ffs),
+		decodeFeatureFlagQueryString,
+		encodeResponse,
+		httptransport.ServerErrorEncoder(handleErrorEncoder),
+	)
+	api.router.AddHandler(RouterArguments{Path: "/features/{feature_key}", Methods: []string{"GET"}, HandlerNormal: findFeatureFlagHandler})
+
 	return api
 }
 
