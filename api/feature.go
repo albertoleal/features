@@ -49,3 +49,21 @@ func makeCreateFeatureFlag(feature features.Features) endpoint.Endpoint {
 		return HTTPResponse{StatusCode: http.StatusCreated, Body: ff}, nil
 	}
 }
+
+func makeUpdateFeatureFlag(feature features.Features) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(featureFlagRequest)
+		ff := req.FeatureFlag
+
+		if ff, err := feature.Find(ff.Key); ff == nil {
+			return nil, NewNotFoundError(err)
+		}
+
+		err := feature.Save(ff)
+		if err != nil {
+			return nil, err
+		}
+
+		return HTTPResponse{StatusCode: http.StatusOK, Body: ff}, nil
+	}
+}

@@ -44,6 +44,15 @@ func NewApi(ng engine.Engine) *Api {
 	)
 	api.router.AddHandler(RouterArguments{Path: "/features", Methods: []string{"POST"}, HandlerNormal: createFeatureFlagHandler})
 
+	updateFeatureFlagHandler := httptransport.NewServer(
+		ctx,
+		makeUpdateFeatureFlag(ffs),
+		decodeFeatureFlagRequest,
+		encodeResponse,
+		httptransport.ServerErrorEncoder(handleErrorEncoder),
+	)
+	api.router.AddHandler(RouterArguments{Path: "/features/{feature_key}", Methods: []string{"PUT"}, HandlerNormal: updateFeatureFlagHandler})
+
 	return api
 }
 

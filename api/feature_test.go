@@ -82,3 +82,43 @@ func (s *S) TestCreateFeatureWithExistingKey(c *C) {
 	c.Assert(headers.Get("Content-Type"), Equals, "application/json")
 	c.Assert(string(body), Equals, "{\"error\":\"bad_request\",\"error_description\":\"There's another feature for the same key value.\"}\n")
 }
+
+func (s *S) TestUpdateFeature(c *C) {
+	featureKey := "login_via_email"
+	feature := engine.FeatureFlag{
+		Key:     featureKey,
+		Enabled: false,
+	}
+	s.ng.UpsertFeatureFlag(feature)
+
+	defer func() {
+		ffk := engine.FeatureFlagKey{Key: featureKey}
+		s.ng.DeleteFeatureFlag(ffk)
+	}()
+
+	headers, code, body, _ := httpClient.MakeRequest(requests.Args{
+		AcceptableCode: http.StatusOK,
+		Method:         "PUT",
+		Path:           fmt.Sprintf("/features/%s", featureKey),
+		Body:           fmt.Sprintf(`{"key": "%s", "percentage": 20, "enabled": false}`, featureKey),
+	})
+
+	c.Assert(code, Equals, http.StatusOK)
+	c.Assert(headers.Get("Content-Type"), Equals, "application/json")
+	c.Assert(string(body), Equals, "{\"enabled\":false,\"key\":\"login_via_email\",\"percentage\":20}\n")
+}
+
+func (s *S) TestUpdateFeatureNotFound(c *C) {
+	featureKey := "login_via_email"
+
+	headers, code, body, _ := httpClient.MakeRequest(requests.Args{
+		AcceptableCode: http.StatusNotFound,
+		Method:         "PUT",
+		Path:           fmt.Sprintf("/features/%s", featureKey),
+		Body:           fmt.Sprintf(`{"percentage": 20, "enabled": false}`, featureKey),
+	})
+
+	c.Assert(code, Equals, http.StatusNotFound)
+	c.Assert(headers.Get("Content-Type"), Equals, "application/json")
+	c.Assert(string(body), Equals, "{\"error\":\"not_found\",\"error_description\":\"Feature flag not found.\"}")
+}
