@@ -7,6 +7,8 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/albertoleal/features/engine"
 )
 
 type HTTPResponse struct {
@@ -42,7 +44,7 @@ func encodeResponse(rw http.ResponseWriter, response interface{}) error {
 
 func handleErrorEncoder(rw http.ResponseWriter, err error) {
 	switch err.(type) {
-	case NotFoundError:
+	case *engine.NotFoundError, NotFoundError:
 		erro := ErrorResponse{Type: E_NOT_FOUND, Description: err.Error()}
 		NotFound(rw, erro)
 	default:

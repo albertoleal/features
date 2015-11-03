@@ -12,11 +12,16 @@ import (
 	"github.com/albertoleal/features"
 	"github.com/albertoleal/features/engine"
 	"github.com/go-kit/kit/endpoint"
+	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 )
 
 type featureFlagRequest struct {
 	engine.FeatureFlag
+}
+
+func decodeFeatureFlagQueryString(r *http.Request) (interface{}, error) {
+	return mux.Vars(r)["feature_key"], nil
 }
 
 func decodeFeatureFlagRequest(r *http.Request) (interface{}, error) {
@@ -65,5 +70,17 @@ func makeUpdateFeatureFlag(feature features.Features) endpoint.Endpoint {
 		}
 
 		return HTTPResponse{StatusCode: http.StatusOK, Body: ff}, nil
+	}
+}
+
+func makeDeleteFeatureFlag(feature features.Features) endpoint.Endpoint {
+	return func(ctx context.Context, feature_key interface{}) (interface{}, error) {
+		fk := feature_key.(string)
+		err := feature.Delete(fk)
+		if err != nil {
+			return nil, err
+		}
+
+		return HTTPResponse{StatusCode: http.StatusNoContent}, nil
 	}
 }

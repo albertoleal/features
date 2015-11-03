@@ -122,3 +122,36 @@ func (s *S) TestUpdateFeatureNotFound(c *C) {
 	c.Assert(headers.Get("Content-Type"), Equals, "application/json")
 	c.Assert(string(body), Equals, "{\"error\":\"not_found\",\"error_description\":\"Feature flag not found.\"}")
 }
+
+func (s *S) TestDeleteFeatureNotFound(c *C) {
+	featureKey := "login_via_email"
+
+	headers, code, body, _ := httpClient.MakeRequest(requests.Args{
+		AcceptableCode: http.StatusNotFound,
+		Method:         "DELETE",
+		Path:           fmt.Sprintf("/features/%s", featureKey),
+	})
+
+	c.Assert(code, Equals, http.StatusNotFound)
+	c.Assert(headers.Get("Content-Type"), Equals, "application/json")
+	c.Assert(string(body), Equals, "{\"error\":\"not_found\",\"error_description\":\"Feature flag not found.\"}")
+}
+
+func (s *S) TestDeleteFeature(c *C) {
+	featureKey := "login_via_email"
+	feature := engine.FeatureFlag{
+		Key:     featureKey,
+		Enabled: false,
+	}
+	s.ng.UpsertFeatureFlag(feature)
+
+	headers, code, body, _ := httpClient.MakeRequest(requests.Args{
+		AcceptableCode: http.StatusNoContent,
+		Method:         "DELETE",
+		Path:           fmt.Sprintf("/features/%s", featureKey),
+	})
+
+	c.Assert(code, Equals, http.StatusNoContent)
+	c.Assert(headers.Get("Content-Type"), Equals, "application/json")
+	c.Assert(string(body), Equals, "")
+}
