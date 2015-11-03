@@ -169,6 +169,24 @@ func (s *S) TestWithout(c *C) {
 	c.Assert(status, Equals, true)
 }
 
+func (s *S) TestUserHasAccessWhenTheFeatureIsNotFound(c *C) {
+	key := "Feature Key"
+	email := "alice@example.org"
+
+	c.Assert(s.Features.UserHasAccess(key, email), Equals, false)
+}
+
+func (s *S) TestUserHasAccessWhenTheFeatureIsEnabled(c *C) {
+	key := "Feature Key"
+	email := "alice@example.org"
+
+	feature, err := engine.NewFeatureFlag(key, true, []*engine.User{&engine.User{Id: email}}, 0)
+	err = s.Features.Save(*feature)
+	c.Check(err, IsNil)
+
+	c.Assert(s.Features.UserHasAccess(key, email), Equals, true)
+}
+
 func (s *S) TestUserHasAccessWhenTheFeatureIsDisabled(c *C) {
 	key := "Feature Key"
 	email := "alice@example.org"
@@ -229,12 +247,12 @@ func (s *S) TestValid(c *C) {
 		Key:     key,
 		Enabled: true,
 	}
-	err := s.Features.Save(feature)
+	ok, err := s.Features.Valid(&feature)
+	c.Assert(ok, Equals, true)
 	c.Check(err, IsNil)
 
-	ok, err := s.Features.Valid(&feature)
-	c.Assert(ok, Equals, false)
-	c.Check(err, Not(IsNil))
+	err = s.Features.Save(feature)
+	c.Check(err, IsNil)
 
 	feature = engine.FeatureFlag{
 		Key:     "",
