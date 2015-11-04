@@ -111,6 +111,7 @@ You might want to enable a feature for a set of users to try out and give feedba
   - [`DELETE` /features/:feature-key](#delete-an-existing-feature-flag) - Delete an existing feature flag
   - [`GET` /features/:feature-key](#get-an-existing-feature-flag) - Get an existing feature flag
   - [`GET` /features](#list-all-feature-flags) - List all feature flags
+  - [`PUT` /features](#validate-acccess) - Validate Access
 
   #### Create a new feature flag
   ```bash
@@ -186,4 +187,23 @@ You might want to enable a feature for a set of users to try out and give feedba
     ],
     "item_count": 1
   }
+  ```
+
+  #### Validate acccess
+  ```bash
+  curl -i http://localhost:8000/features -XPUT -d '{"key": "login-via-email", "user": "alice@example.org"}'
+  ```
+  Response for **success**:
+  ```bash
+  HTTP/1.1 200 OK
+  Content-Type: application/json
+  Date: Wed, 04 Nov 2015 00:19:46 GMT
+  Content-Length: 0
+  ```
+  Response for **failure**:
+  ```bash
+  HTTP/1.1 403 Forbidden
+  Content-Type: application/json
+  Date: Wed, 04 Nov 2015 00:20:51 GMT
+  Content-Length: 0
   ```
