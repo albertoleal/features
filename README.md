@@ -16,6 +16,11 @@ Also known as: feature switch, feature flag, feature toggle, ...
   * Features is completely storage agnostic. You should be able to use your own storage, you just need to implement the [`Engine`](https://github.com/albertoleal/features/blob/master/engine/engine.go) interface.
   * This library comes with an in memory store, but it's basically used for testing. You should not use this in production.
 
+## SDKs
+- [Javascript](https://github.com/albertoleal/features-js-sdk) (in progress)
+- Ruby (soon)
+- Ptyhon  (soon)
+
 ## How it works
 
   Create an instance of Features type passing the storage as an argument:
