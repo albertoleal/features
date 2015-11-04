@@ -19,7 +19,7 @@ Also known as: feature switch, feature flag, feature toggle, ...
 ## SDKs
 - [Javascript](https://github.com/albertoleal/features-js-sdk) (in progress)
 - Ruby (soon)
-- Ptyhon  (soon)
+- Python  (soon)
 
 ## How it works
 
