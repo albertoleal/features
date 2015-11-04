@@ -8,7 +8,7 @@ import (
 	"errors"
 
 	"github.com/albertoleal/features/engine"
-	utils "github.com/mrvdot/golang-utils"
+	utils "github.com/albertoleal/features/Godeps/_workspace/src/github.com/mrvdot/golang-utils"
 )
 
 type Features interface {

@@ -4,7 +4,7 @@ package check_test
 
 import (
 	"time"
-	. "gopkg.in/check.v1"
+	. "github.com/albertoleal/features/Godeps/_workspace/src/gopkg.in/check.v1"
 )
 
 var benchmarkS = Suite(&BenchmarkS{})

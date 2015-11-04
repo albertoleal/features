@@ -3,6 +3,10 @@
 	"GoVersion": "go1.5.1",
 	"Deps": [
 		{
+			"ImportPath": "github.com/mrvdot/golang-utils",
+			"Rev": "3bbc7a96a9bb228742142c93d529c0e77567740a"
+		},
+		{
 			"ImportPath": "gopkg.in/check.v1",
 			"Rev": "64131543e7896d5bcc6bd5a76287eb75ea96c673"
 		}

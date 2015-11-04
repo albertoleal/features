@@ -11,7 +11,7 @@ import (
 	"github.com/albertoleal/features"
 	"github.com/albertoleal/features/engine"
 	"github.com/albertoleal/features/engine/memory"
-	. "gopkg.in/check.v1"
+	. "github.com/albertoleal/features/Godeps/_workspace/src/gopkg.in/check.v1"
 )
 
 type S struct {
