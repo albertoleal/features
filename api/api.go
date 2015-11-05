@@ -37,7 +37,7 @@ func NewApi(ng engine.Engine) *Api {
 
 	createHandler := httptransport.NewServer(
 		ctx,
-		MakeCreate(ffs),
+		CreateEndpoint(ffs),
 		decodeFeatureFlagRequest,
 		encodeResponse,
 		httptransport.ServerErrorEncoder(handleErrorEncoder),
@@ -46,7 +46,7 @@ func NewApi(ng engine.Engine) *Api {
 
 	updateHandler := httptransport.NewServer(
 		ctx,
-		MakeUpdate(ffs),
+		UpdateEndpoint(ffs),
 		decodeFeatureFlagRequest,
 		encodeResponse,
 		httptransport.ServerErrorEncoder(handleErrorEncoder),
@@ -55,7 +55,7 @@ func NewApi(ng engine.Engine) *Api {
 
 	deleteHandler := httptransport.NewServer(
 		ctx,
-		MakeDelete(ffs),
+		DeleteEndpoint(ffs),
 		decodeFeatureFlagQueryString,
 		encodeResponse,
 		httptransport.ServerErrorEncoder(handleErrorEncoder),
@@ -64,7 +64,7 @@ func NewApi(ng engine.Engine) *Api {
 
 	findHandler := httptransport.NewServer(
 		ctx,
-		MakeFind(ffs),
+		FindEndpoint(ffs),
 		decodeFeatureFlagQueryString,
 		encodeResponse,
 		httptransport.ServerErrorEncoder(handleErrorEncoder),
@@ -73,7 +73,7 @@ func NewApi(ng engine.Engine) *Api {
 
 	listHandler := httptransport.NewServer(
 		ctx,
-		MakeList(ffs),
+		ListEndpoint(ffs),
 		decodeFeatureFlagQueryString,
 		encodeResponse,
 		httptransport.ServerErrorEncoder(handleErrorEncoder),
@@ -82,7 +82,7 @@ func NewApi(ng engine.Engine) *Api {
 
 	validateHandler := httptransport.NewServer(
 		ctx,
-		MakeValidate(ffs),
+		ValidateEndpoint(ffs),
 		decodeValidationRequest,
 		encodeResponse,
 		httptransport.ServerErrorEncoder(handleErrorEncoder),
