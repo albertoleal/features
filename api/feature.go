@@ -53,7 +53,7 @@ func decodeFeatureFlagRequest(r *http.Request) (interface{}, error) {
 	return request, nil
 }
 
-func makeCreate(feature features.Features) endpoint.Endpoint {
+func MakeCreate(feature features.Features) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(featureFlagRequest)
 		ff := req.FeatureFlag
@@ -72,7 +72,7 @@ func makeCreate(feature features.Features) endpoint.Endpoint {
 	}
 }
 
-func makeUpdate(feature features.Features) endpoint.Endpoint {
+func MakeUpdate(feature features.Features) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(featureFlagRequest)
 		ff := req.FeatureFlag
@@ -90,7 +90,7 @@ func makeUpdate(feature features.Features) endpoint.Endpoint {
 	}
 }
 
-func makeDelete(feature features.Features) endpoint.Endpoint {
+func MakeDelete(feature features.Features) endpoint.Endpoint {
 	return func(ctx context.Context, feature_key interface{}) (interface{}, error) {
 		fk := feature_key.(string)
 		err := feature.Delete(fk)
@@ -102,7 +102,7 @@ func makeDelete(feature features.Features) endpoint.Endpoint {
 	}
 }
 
-func makeFind(feature features.Features) endpoint.Endpoint {
+func MakeFind(feature features.Features) endpoint.Endpoint {
 	return func(ctx context.Context, feature_key interface{}) (interface{}, error) {
 		fk := feature_key.(string)
 		ff, err := feature.Find(fk)
@@ -114,7 +114,7 @@ func makeFind(feature features.Features) endpoint.Endpoint {
 	}
 }
 
-func makeList(feature features.Features) endpoint.Endpoint {
+func MakeList(feature features.Features) endpoint.Endpoint {
 	return func(ctx context.Context, feature_key interface{}) (interface{}, error) {
 
 		ffs, err := feature.List()
@@ -130,7 +130,7 @@ func makeList(feature features.Features) endpoint.Endpoint {
 	}
 }
 
-func makeValidate(feature features.Features) endpoint.Endpoint {
+func MakeValidate(feature features.Features) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(validationRequest)
 
