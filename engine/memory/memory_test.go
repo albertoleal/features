@@ -11,7 +11,7 @@ import (
 	. "gopkg.in/check.v1"
 )
 
-func TestMem(t *testing.T) {
+func TestMemory(t *testing.T) {
 	Suite(&test.EngineSuite{Engine: New()})
 	TestingT(t)
 }

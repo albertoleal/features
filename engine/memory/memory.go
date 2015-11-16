@@ -5,11 +5,14 @@
 package memory
 
 import (
+	"sync"
+
 	"github.com/albertoleal/features/engine"
 )
 
 type Memory struct {
 	FeatureFlags map[engine.FeatureFlagKey]engine.FeatureFlag
+	mtx          sync.RWMutex
 }
 
 func New() engine.Engine {
@@ -27,6 +30,8 @@ func (m *Memory) GetFeatureFlags() ([]engine.FeatureFlag, error) {
 }
 
 func (m *Memory) GetFeatureFlag(k engine.FeatureFlagKey) (*engine.FeatureFlag, error) {
+	m.mtx.RLock()
+	defer m.mtx.RUnlock()
 	ff, ok := m.FeatureFlags[k]
 	if !ok {
 		return nil, &engine.NotFoundError{}
@@ -35,7 +40,9 @@ func (m *Memory) GetFeatureFlag(k engine.FeatureFlagKey) (*engine.FeatureFlag, e
 }
 
 func (m *Memory) UpsertFeatureFlag(ff engine.FeatureFlag) error {
+	m.mtx.Lock()
 	m.FeatureFlags[engine.FeatureFlagKey{Key: ff.Key}] = ff
+	m.mtx.Unlock()
 	return nil
 }
 
@@ -43,6 +50,8 @@ func (m *Memory) DeleteFeatureFlag(k engine.FeatureFlagKey) error {
 	if _, ok := m.FeatureFlags[k]; !ok {
 		return &engine.NotFoundError{}
 	}
+	m.mtx.Lock()
 	delete(m.FeatureFlags, k)
+	m.mtx.Unlock()
 	return nil
 }
