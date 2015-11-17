@@ -25,13 +25,13 @@ Also known as: feature switch, feature flag, feature toggle, ...
 
   Create an instance of Features type passing the storage as an argument:
 
-  ```golang
+  ```go
   Features := features.New(memory.New())
   ```
 
   Create an instance of Feature type with the desired parameters and save it:
 
-  ```golang
+  ```go
   feature := engine.FeatureFlag{
     Key:     "Feature X",
     Enabled: false,
@@ -43,25 +43,25 @@ Also known as: feature switch, feature flag, feature toggle, ...
 
   Check if a feature is **enabled**:
 
-  ```golang
+  ```go
   Features.IsEnabled("Feature X")
   ```
 
   Check if a feature is **disabled**:
 
-  ```golang
+  ```go
   Features.IsDisabled("Feature X")
   ```
 
   Execute an anonymous function if the feature is **enabled**:
-  ```golang
+  ```go
   Features.With("Feature X", func() {
     fmt.Println("`Feature X` is enabled!")
   })
   ```
 
   Execute an anonymous function if the feature is **disabled**:
-  ```golang
+  ```go
   Features.Without("Feature X", func() {
     fmt.Println("`Feature X` is disabled!")
   })
@@ -69,7 +69,7 @@ Also known as: feature switch, feature flag, feature toggle, ...
 
   Check if a feature is active for a particular user:
 
-  ```golang
+  ```go
   Features.UserHasAccess("Feature X", "alice@example.org")
   ```
 
@@ -78,7 +78,7 @@ Also known as: feature switch, feature flag, feature toggle, ...
 If you're rolling out a feature, you might want to enable it for a percentage of your users. There are two ways you can achieve that: Either enabling the feature for a percentage of users or disabling that.
 
   * **Enable** the feature for a percentage of users:
-  ```golang
+  ```go
   feature := engine.FeatureFlag{
     Key:     "Feature X",
     Enabled: true,
@@ -87,7 +87,7 @@ If you're rolling out a feature, you might want to enable it for a percentage of
   ```
 
   * **Disable** the feature for a percentage of users:
-  ```golang
+  ```go
   feature := engine.FeatureFlag{
     Key:     "Feature X",
     Enabled: false,
@@ -99,7 +99,7 @@ If you're rolling out a feature, you might want to enable it for a percentage of
 
 You might want to enable a feature for a set of users to try out and give feedback on before it's rolled out for everyone. To achieve this, you need to specify the users by doing the following:
 
-  ```golang
+  ```go
   feature := engine.FeatureFlag{
     Key:     "Feature X",
     Enabled: true,
