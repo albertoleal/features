@@ -152,7 +152,7 @@ func (s *S) TestDeleteFeature(c *C) {
 	})
 
 	c.Assert(code, Equals, http.StatusNoContent)
-	c.Assert(headers.Get("Content-Type"), Equals, "application/json")
+	c.Assert(headers.Get("Content-Type"), Equals, "text/plain")
 	c.Assert(string(body), Equals, "")
 }
 

@@ -31,10 +31,13 @@ func encodeResponse(rw http.ResponseWriter, response interface{}) error {
 	resp := response.(HTTPResponse)
 	var contentType string
 	if contentType = resp.ContentType; contentType == "" {
+		contentType = "text/plain"
+	}
+	if resp.Body != nil {
 		contentType = "application/json"
 	}
-	rw.Header().Set("Content-Type", contentType)
 
+	rw.Header().Set("Content-Type", contentType)
 	rw.WriteHeader(resp.StatusCode)
 	if resp.Body != nil {
 		return json.NewEncoder(rw).Encode(resp.Body)
