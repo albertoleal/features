@@ -194,7 +194,7 @@ You might want to enable a feature for a set of users to try out and give feedba
   }
   ```
 
-  #### Validate acccess
+  #### Validate access
   ```bash
   curl -i http://localhost:8000/features -XPUT -d '{"key": "login-via-email", "user": "alice@example.org"}'
   ```
