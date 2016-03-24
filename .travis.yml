@@ -23,7 +23,6 @@ install:
   - godep restore ./...
 
 script:
-  - cd $HOME/gopath/src/github.com/albertoleal/features
   - $HOME/gopath/bin/goveralls -service=travis-ci
   - go test -x ./...
 
